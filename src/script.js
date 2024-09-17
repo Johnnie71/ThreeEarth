@@ -30,6 +30,32 @@ earthNightTexture.colorSpace = THREE.SRGBColorSpace
 
 const earthSpecularCloudsTexture = textureLoader.load('./earth/specularClouds.jpg')
 
+/**
+ * Sun
+ */
+const sunSpherical = new THREE.Spherical(1, Math.PI * 0.5)
+const sunDirection = new THREE.Vector3()
+
+// Debug Sun
+const debugSun = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.1, 2),
+    new THREE.MeshBasicMaterial()
+)
+
+scene.add(debugSun)
+
+// Update
+const updateSun = () => {
+    // Sun direction
+    sunDirection.setFromSpherical(sunSpherical)
+
+    //debug
+    debugSun.position
+        .copy(sunDirection)
+        .multiplyScalar(5)
+}
+updateSun()
+
 // Mesh
 const earthGeometry = new THREE.SphereGeometry(2, 64, 64)
 const earthMaterial = new THREE.ShaderMaterial({
