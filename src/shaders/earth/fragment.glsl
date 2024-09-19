@@ -29,7 +29,8 @@ void main()
 
     // Clouds
     float cloudsMix = smoothstep(0.2, 1.0, specularCloudsColor.g);
-    cloudsMix *= dayMix;
+    float nightTransparencyFactor = mix(0.02, 1.0, dayMix); // 0.02 makes clouds more transparent at night, 1.0 keeps them opaque during the day
+    cloudsMix *= nightTransparencyFactor;
     color = mix(color, vec3(1.0), cloudsMix);
 
     // Fresnel
