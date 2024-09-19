@@ -17,7 +17,6 @@ void main()
     // Sun direction
     vec3 uSunDirection = vec3(0.0, 0.0, 1.0);
     float sunOrientation = dot(uSunDirection, normal);
-    // color = vec3(sunOrientation);
 
     // Day / night color
     float dayMix = smoothstep(- 0.25, 0.5, sunOrientation);
@@ -41,6 +40,13 @@ void main()
     float atmosphereDayMix = smoothstep(-0.5, 1.0, sunOrientation);
     vec3 atmosphereColor = mix(uAtmosphereTwilightColor, uAtmosphereDayColor, atmosphereDayMix);
     color = mix(color, atmosphereColor, fresnel * atmosphereDayMix);
+
+    // Specular
+    vec3 reflection = reflect(- uSunDirection, normal);
+    float specular = - dot(reflection, viewDirection);
+    specular = max(specular, 0.0);
+    specular = pow(specular, 32.0);
+    color += specular;
  
     // Final color
     gl_FragColor = vec4(color, 1.0);
