@@ -10,7 +10,7 @@ import atmosphereFragmentShader from './shaders/atmosphere/fragment.glsl'
  * Base
  */
 // Debug
-const gui = new GUI() 
+// const gui = new GUI() 
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -28,21 +28,21 @@ const earthParameters = {}
 earthParameters.atmosphereDayColor = '#00aaff'
 earthParameters.atmosphereTwilightColor = '#ff6600'
 
-gui
-    .addColor(earthParameters, 'atmosphereDayColor')
-    .onChange(() =>
-    {
-        earthMaterial.uniforms.uAtmosphereDayColor.value.set(earthParameters.atmosphereDayColor)
-        atmosphereMaterial.uniforms.uAtmosphereDayColor.value.set(earthParameters.atmosphereDayColor)
-    })
+// gui
+//     .addColor(earthParameters, 'atmosphereDayColor')
+//     .onChange(() =>
+//     {
+//         earthMaterial.uniforms.uAtmosphereDayColor.value.set(earthParameters.atmosphereDayColor)
+//         atmosphereMaterial.uniforms.uAtmosphereDayColor.value.set(earthParameters.atmosphereDayColor)
+//     })
 
-gui
-    .addColor(earthParameters, 'atmosphereTwilightColor')
-    .onChange(() =>
-    {
-        earthMaterial.uniforms.uAtmosphereTwilightColor.value.set(earthParameters.atmosphereTwilightColor)
-        atmosphereMaterial.uniforms.uAtmosphereTwilightColor.value.set(earthParameters.atmosphereTwilightColor)
-    })
+// gui
+//     .addColor(earthParameters, 'atmosphereTwilightColor')
+//     .onChange(() =>
+//     {
+//         earthMaterial.uniforms.uAtmosphereTwilightColor.value.set(earthParameters.atmosphereTwilightColor)
+//         atmosphereMaterial.uniforms.uAtmosphereTwilightColor.value.set(earthParameters.atmosphereTwilightColor)
+//     })
 
 
 // Textures
@@ -126,17 +126,17 @@ const updateSun = () => {
 updateSun()
 
 // Tweaks
-gui
-    .add(sunSpherical, 'phi')
-    .min(0)
-    .max(Math.PI)
-    .onChange(updateSun)
+// gui
+//     .add(sunSpherical, 'phi')
+//     .min(0)
+//     .max(Math.PI)
+//     .onChange(updateSun)
 
-gui
-    .add(sunSpherical, 'theta')
-    .min(- Math.PI)
-    .max(Math.PI)
-    .onChange(updateSun)
+// gui
+//     .add(sunSpherical, 'theta')
+//     .min(- Math.PI)
+//     .max(Math.PI)
+//     .onChange(updateSun)
 
 /**
  * Sizes
@@ -170,12 +170,14 @@ window.addEventListener('resize', () =>
 const camera = new THREE.PerspectiveCamera(25, sizes.width / sizes.height, 0.1, 100)
 camera.position.x = 12
 camera.position.y = 5
-camera.position.z = 4
+camera.position.z = 15
 scene.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
+controls.minDistance = 10
+controls.maxDistance = 30
 
 /**
  * Renderer
