@@ -103,7 +103,7 @@ scene.add(atmosphere)
 /**
  * Sun
  */
-const sunGeometry = new THREE.SphereGeometry(2, 10, 10)
+const sunGeometry = new THREE.SphereGeometry(2, 64, 64)
 const sunMaterial = new THREE.ShaderMaterial({
    vertexShader: sunVertexShader,
    fragmentShader: sunFragmentShader,
@@ -195,23 +195,23 @@ const cameraPosition = {
     fov: camera.fov,
 };
 
-gui.add(cameraPosition, 'x').min(-100).max(100).step(0.1).name('Camera X').onChange(() => {
-    camera.position.x = cameraPosition.x;
-});
+// gui.add(cameraPosition, 'x').min(-100).max(100).step(0.1).name('Camera X').onChange(() => {
+//     camera.position.x = cameraPosition.x;
+// });
 
-gui.add(cameraPosition, 'y').min(-100).max(100).step(0.1).name('Camera Y').onChange(() => {
-    camera.position.y = cameraPosition.y;
-});
+// gui.add(cameraPosition, 'y').min(-100).max(100).step(0.1).name('Camera Y').onChange(() => {
+//     camera.position.y = cameraPosition.y;
+// });
 
-gui.add(cameraPosition, 'z').min(-100).max(100).step(0.1).name('Camera Z').onChange(() => {
-    camera.position.z = cameraPosition.z;
-});
+// gui.add(cameraPosition, 'z').min(-100).max(100).step(0.1).name('Camera Z').onChange(() => {
+//     camera.position.z = cameraPosition.z;
+// });
 
-// Add FOV control
-gui.add(cameraPosition, 'fov').min(10).max(75).step(1).name('Camera FOV').onChange(() => {
-    camera.fov = cameraPosition.fov;
-    camera.updateProjectionMatrix();
-});
+// // Add FOV control
+// gui.add(cameraPosition, 'fov').min(10).max(75).step(1).name('Camera FOV').onChange(() => {
+//     camera.fov = cameraPosition.fov;
+//     camera.updateProjectionMatrix();
+// });
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
