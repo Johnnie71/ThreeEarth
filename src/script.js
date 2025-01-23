@@ -117,9 +117,6 @@ sun.scale.set(2, 2, 2)
 sun.position.set(20, 0, 0);
 scene.add(sun)
 
-const sunSpherical = new THREE.Spherical(1, Math.PI * 0.5)
-const sunDirection = new THREE.Vector3()
-
 // Debug Sun
 const debugSun = new THREE.Mesh(
     new THREE.IcosahedronGeometry(0.1, 2),
@@ -184,47 +181,45 @@ window.addEventListener('resize', () =>
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(25, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = -42.2
-camera.position.y = 7
-camera.position.z = -21.3
+const camera = new THREE.PerspectiveCamera(25, sizes.width / sizes.height, 0.1, 500)
+camera.position.x = 77.8
+camera.position.y = 16.8
+camera.position.z = -16.4
 scene.add(camera)
 
-// const earthOffset = new THREE.Vector3(-10, 5, 10); // Offset for positioning behind and above the Earth
-// const targetPosition = new THREE.Vector3().addVectors(earth.position, earthOffset);
-// camera.position.copy(targetPosition);
-// camera.lookAt(earth.position); // Ensure the camera looks at the Earth
-
-// GUI controls for camera position
-const cameraOffset = {
-    x: -42.2,
-    y: 7,
-    z: -21.3,
+// Add GUI for camera position and FOV
+const cameraPosition = {
+    x: camera.position.x,
+    y: camera.position.y,
+    z: camera.position.z,
+    fov: camera.fov,
 };
 
-gui.add(cameraOffset, 'x').min(-50).max(50).step(0.1).name('Camera Offset X').onChange(() => {
-    const targetPosition = new THREE.Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z).add(earth.position);
-    camera.position.copy(targetPosition);
-    camera.lookAt(earth.position);
+gui.add(cameraPosition, 'x').min(-100).max(100).step(0.1).name('Camera X').onChange(() => {
+    camera.position.x = cameraPosition.x;
 });
 
-gui.add(cameraOffset, 'y').min(-50).max(50).step(0.1).name('Camera Offset Y').onChange(() => {
-    const targetPosition = new THREE.Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z).add(earth.position);
-    camera.position.copy(targetPosition);
-    camera.lookAt(earth.position);
+gui.add(cameraPosition, 'y').min(-100).max(100).step(0.1).name('Camera Y').onChange(() => {
+    camera.position.y = cameraPosition.y;
 });
 
-gui.add(cameraOffset, 'z').min(-50).max(50).step(0.1).name('Camera Offset Z').onChange(() => {
-    const targetPosition = new THREE.Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z).add(earth.position);
-    camera.position.copy(targetPosition);
-    camera.lookAt(earth.position);
+gui.add(cameraPosition, 'z').min(-100).max(100).step(0.1).name('Camera Z').onChange(() => {
+    camera.position.z = cameraPosition.z;
+});
+
+// Add FOV control
+gui.add(cameraPosition, 'fov').min(10).max(75).step(1).name('Camera FOV').onChange(() => {
+    camera.fov = cameraPosition.fov;
+    camera.updateProjectionMatrix();
 });
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.minDistance = 10
-controls.maxDistance = 50
+controls.maxDistance = 100
+controls.enablePan = true
+controls.enableRotate = true
 
 /**
  * Renderer
