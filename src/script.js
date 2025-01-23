@@ -5,12 +5,14 @@ import earthVertexShader from './shaders/earth/vertex.glsl'
 import earthFragmentShader from './shaders/earth/fragment.glsl'
 import atmosphereVertexShader from './shaders/atmosphere/vertex.glsl'
 import atmosphereFragmentShader from './shaders/atmosphere/fragment.glsl'
+import sunVertexShader from './shaders/sun/vertex.glsl'
+import sunFragmentShader from './shaders/sun/fragment.glsl'
 
 /**
  * Base
  */
 // Debug
-// const gui = new GUI() 
+const gui = new GUI() 
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -57,6 +59,10 @@ earthNightTexture.anisotropy = 8
 const earthSpecularCloudsTexture = textureLoader.load('./earth/specularClouds.jpg')
 earthSpecularCloudsTexture.anisotropy = 8
 
+const sunTexture = textureLoader.load('./sun/sun.jpg')
+sunTexture.colorSpace = THREE.SRGBColorSpace
+sunTexture.anisotropy = 8
+
 // Mesh
 const earthGeometry = new THREE.SphereGeometry(2, 64, 64)
 const earthMaterial = new THREE.ShaderMaterial({
@@ -97,6 +103,20 @@ scene.add(atmosphere)
 /**
  * Sun
  */
+const sunGeometry = new THREE.SphereGeometry(2, 10, 10)
+const sunMaterial = new THREE.ShaderMaterial({
+   vertexShader: sunVertexShader,
+   fragmentShader: sunFragmentShader,
+   uniforms: {
+        uSunTexture: new THREE.Uniform(sunTexture)
+   }
+})
+
+const sun = new THREE.Mesh(sunGeometry, sunMaterial)
+sun.scale.set(2, 2, 2)
+sun.position.set(20, 0, 0);
+scene.add(sun)
+
 const sunSpherical = new THREE.Spherical(1, Math.PI * 0.5)
 const sunDirection = new THREE.Vector3()
 
@@ -106,16 +126,13 @@ const debugSun = new THREE.Mesh(
     new THREE.MeshBasicMaterial()
 )
 
-scene.add(debugSun)
-
 // Update
 const updateSun = () => {
     // Sun direction
-    sunDirection.setFromSpherical(sunSpherical)
-
+    const sunDirection = sun.position.clone().normalize();
     //debug
     debugSun.position
-        .copy(sunDirection)
+        .copy(sun.position)
         .multiplyScalar(5)
     
     // Uniforms
@@ -125,7 +142,7 @@ const updateSun = () => {
 
 updateSun()
 
-// Tweaks
+//Tweaks
 // gui
 //     .add(sunSpherical, 'phi')
 //     .min(0)
@@ -168,16 +185,46 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(25, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 12
-camera.position.y = 5
-camera.position.z = 15
+camera.position.x = -42.2
+camera.position.y = 7
+camera.position.z = -21.3
 scene.add(camera)
+
+// const earthOffset = new THREE.Vector3(-10, 5, 10); // Offset for positioning behind and above the Earth
+// const targetPosition = new THREE.Vector3().addVectors(earth.position, earthOffset);
+// camera.position.copy(targetPosition);
+// camera.lookAt(earth.position); // Ensure the camera looks at the Earth
+
+// GUI controls for camera position
+const cameraOffset = {
+    x: -42.2,
+    y: 7,
+    z: -21.3,
+};
+
+gui.add(cameraOffset, 'x').min(-50).max(50).step(0.1).name('Camera Offset X').onChange(() => {
+    const targetPosition = new THREE.Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z).add(earth.position);
+    camera.position.copy(targetPosition);
+    camera.lookAt(earth.position);
+});
+
+gui.add(cameraOffset, 'y').min(-50).max(50).step(0.1).name('Camera Offset Y').onChange(() => {
+    const targetPosition = new THREE.Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z).add(earth.position);
+    camera.position.copy(targetPosition);
+    camera.lookAt(earth.position);
+});
+
+gui.add(cameraOffset, 'z').min(-50).max(50).step(0.1).name('Camera Offset Z').onChange(() => {
+    const targetPosition = new THREE.Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z).add(earth.position);
+    camera.position.copy(targetPosition);
+    camera.lookAt(earth.position);
+});
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.minDistance = 10
-controls.maxDistance = 30
+controls.maxDistance = 50
 
 /**
  * Renderer
