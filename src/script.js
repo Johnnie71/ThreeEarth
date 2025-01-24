@@ -15,7 +15,7 @@ import sunAtmosphereFragmentShader from './shaders/sunatmosphere/fragment.glsl'
  * Base
  */
 // Debug
-// const gui = new GUI() 
+const gui = new GUI() 
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -204,7 +204,16 @@ window.addEventListener('resize', () =>
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(25, sizes.width / sizes.height, 0.1, 500)
+
+function getFOV(){
+    if (window.innerWidth > 768) {
+        return 9
+    } else {
+        return 12
+    }
+}
+
+const camera = new THREE.PerspectiveCamera(getFOV(), sizes.width / sizes.height, 0.1, 500)
 camera.position.x = 77.8
 camera.position.y = 16.8
 camera.position.z = -16.4
@@ -218,23 +227,23 @@ const cameraPosition = {
     fov: camera.fov,
 };
 
-// gui.add(cameraPosition, 'x').min(-100).max(100).step(0.1).name('Camera X').onChange(() => {
-//     camera.position.x = cameraPosition.x;
-// });
+gui.add(cameraPosition, 'x').min(-100).max(100).step(0.1).name('Camera X').onChange(() => {
+    camera.position.x = cameraPosition.x;
+});
 
-// gui.add(cameraPosition, 'y').min(-100).max(100).step(0.1).name('Camera Y').onChange(() => {
-//     camera.position.y = cameraPosition.y;
-// });
+gui.add(cameraPosition, 'y').min(-100).max(100).step(0.1).name('Camera Y').onChange(() => {
+    camera.position.y = cameraPosition.y;
+});
 
-// gui.add(cameraPosition, 'z').min(-100).max(100).step(0.1).name('Camera Z').onChange(() => {
-//     camera.position.z = cameraPosition.z;
-// });
+gui.add(cameraPosition, 'z').min(-100).max(100).step(0.1).name('Camera Z').onChange(() => {
+    camera.position.z = cameraPosition.z;
+});
 
-// // Add FOV control
-// gui.add(cameraPosition, 'fov').min(10).max(75).step(1).name('Camera FOV').onChange(() => {
-//     camera.fov = cameraPosition.fov;
-//     camera.updateProjectionMatrix();
-// });
+// Add FOV control
+gui.add(cameraPosition, 'fov').min(1).max(75).step(1).name('Camera FOV').onChange(() => {
+    camera.fov = cameraPosition.fov;
+    camera.updateProjectionMatrix();
+});
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
