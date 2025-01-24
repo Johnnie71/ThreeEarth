@@ -311,7 +311,10 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
 
     // Earth Rotation
-    earth.rotation.y = elapsedTime * 0.1
+    earth.rotation.y = elapsedTime * (2 * Math.PI / 50)
+
+    // Sun rotation
+    sun.rotation.y = elapsedTime * (2 * Math.PI / 150)
 
     // Update for sun materials
     sunMaterial.uniforms.uTime.value = elapsedTime
