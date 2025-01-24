@@ -52,6 +52,53 @@ sunParameters.atmosphereColor = "#FFCC00"
 //         atmosphereMaterial.uniforms.uAtmosphereTwilightColor.value.set(earthParameters.atmosphereTwilightColor)
 //     })
 
+/**
+ * Particles
+ */
+// Geometry
+const particlesGeometry = new THREE.BufferGeometry()
+const count = 20000
+const positions = new Float32Array(count * 3)
+const colors = new Float32Array(count * 3)
+
+// Random particle positions
+for (let i = 0; i < count; i++) {
+    positions[i * 3] = Math.random() * 100 - 50;  // X
+    positions[i * 3 + 1] = Math.random() * 100 - 50;  // Y
+    positions[i * 3 + 2] = Math.random() * 100 - 50;  // Z
+
+    colors[i * 3] = Math.random() 
+    colors[i * 3 + 1] = Math.random()
+    colors[i * 3 + 2] = Math.random()
+
+}
+
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+const particlesMaterial = new THREE.PointsMaterial({
+    size: 3.0,
+    sizeAttenuation: true,
+    vertexColors: true
+})
+
+const particleTexture = textureLoader.load('/particles/3.png')
+particlesMaterial.transparent = true
+particlesMaterial.alphaMap = particleTexture
+particlesMaterial.depthWrite = false
+particlesMaterial.blending = THREE.AdditiveBlending
+const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+scene.add(particles)
+
+// const positions = new Float32Array(count * 3) // Multiply by 3 because each position is composed of 3 values (x, y, z)
+
+// for(let i = 0; i < count * 3; i++) // Multiply by 3 for same reason
+// {
+//     positions[i] = (Math.random() - 0.5) * 10 // Math.random() - 0.5 to have a random value between -0.5 and +0.5
+// }
+
+// particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+// scene.add(particlesGeometry)
 
 // Textures
 const earthDayTexture = textureLoader.load('./earth/day.jpg')
@@ -85,7 +132,7 @@ const earthMaterial = new THREE.ShaderMaterial({
     }
 })
 const earth = new THREE.Mesh(earthGeometry, earthMaterial)
-scene.add(earth)
+// scene.add(earth)
 
 // Atmosphere
 const earthAtmosphereMaterial = new THREE.ShaderMaterial({
@@ -102,7 +149,7 @@ const earthAtmosphereMaterial = new THREE.ShaderMaterial({
 })
 const earthAtmosphere = new THREE.Mesh(earthGeometry, earthAtmosphereMaterial)
 earthAtmosphere.scale.set(1.04, 1.04, 1.04)
-scene.add(earthAtmosphere)
+// scene.add(earthAtmosphere)
 
 
 
@@ -122,7 +169,7 @@ const sunMaterial = new THREE.ShaderMaterial({
 const sun = new THREE.Mesh(sunGeometry, sunMaterial)
 sun.scale.set(2, 2, 2)
 sun.position.set(20, 0, 0);
-scene.add(sun)
+// scene.add(sun)
 
 const sunAtmosphereMaterial = new THREE.ShaderMaterial({
     side: THREE.BackSide,
@@ -138,7 +185,7 @@ const sunAtmosphereMaterial = new THREE.ShaderMaterial({
 const sunAtmosphere = new THREE.Mesh(sunGeometry, sunAtmosphereMaterial)
 sunAtmosphere.scale.set(2.1, 2.1, 2.1)
 sunAtmosphere.position.set(20, 0, 0);
-scene.add(sunAtmosphere)
+// scene.add(sunAtmosphere)
 
 // Debug Sun
 const debugSun = new THREE.Mesh(
