@@ -286,7 +286,7 @@ const cameraPosition = {
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.minDistance = 10
-controls.maxDistance = 100
+controls.maxDistance = 200
 controls.enablePan = true
 controls.enableRotate = true
 
