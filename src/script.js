@@ -9,6 +9,8 @@ import sunVertexShader from './shaders/sun/vertex.glsl'
 import sunFragmentShader from './shaders/sun/fragment.glsl'
 import sunAtmosphereVertexShader from './shaders/sunatmosphere/vertex.glsl'
 import sunAtmosphereFragmentShader from './shaders/sunatmosphere/fragment.glsl'
+import moonVertexShader from './shaders/moon/vertex.glsl'
+import moonFragmentShader from './shaders/moon/fragment.glsl'
 
 
 /**
@@ -102,6 +104,9 @@ earthNightTexture.anisotropy = 8
 const earthSpecularCloudsTexture = textureLoader.load('./earth/specularClouds.jpg')
 earthSpecularCloudsTexture.anisotropy = 8
 
+const moonTexture = textureLoader.load('./moon/moon.jpg')
+moonTexture.anisotropy = 8
+
 const sunTexture = textureLoader.load('./sun/sun.jpg')
 sunTexture.colorSpace = THREE.SRGBColorSpace
 sunTexture.anisotropy = 8
@@ -122,6 +127,8 @@ const earthMaterial = new THREE.ShaderMaterial({
     }
 })
 const earth = new THREE.Mesh(earthGeometry, earthMaterial)
+earth.receiveShadow = true
+earth.castShadow = true
 scene.add(earth)
 
 // Atmosphere
@@ -141,7 +148,39 @@ const earthAtmosphere = new THREE.Mesh(earthGeometry, earthAtmosphereMaterial)
 earthAtmosphere.scale.set(1.04, 1.04, 1.04)
 scene.add(earthAtmosphere)
 
+// Moon
+const moonGeometry = new THREE.SphereGeometry(.3, 64, 64)
+const moonMaterial = new THREE.ShaderMaterial({
+    vertexShader: moonVertexShader,
+    fragmentShader: moonFragmentShader,
+    uniforms:
+    {
+        uMoonTexture: new THREE.Uniform(moonTexture),
+        uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
+    },
+})
 
+const moon = new THREE.Mesh(moonGeometry, moonMaterial)
+moon.position.set(5, 0, 0)
+moon.castShadow = true
+moon.receiveShadow = true
+scene.add(moon)
+
+const moonInitialPosition = new THREE.Vector3(5, 0, 0); // Initial Moon position relative to the Earth
+const moonOrbitRadius = moonInitialPosition.length();   // Calculate the radius of the orbit
+const moonOrbitSpeed = 0.2; // Adjust speed for desired animation pacing
+
+function updateMoonOrbit(elapsedTime) {
+    // Use the Earth's position as the center of the orbit
+    const earthX = earth.position.x;
+    const earthY = earth.position.y;
+    const earthZ = earth.position.z;
+
+    // Compute new position for the Moon
+    moon.position.x = earthX + moonOrbitRadius * Math.cos(elapsedTime * moonOrbitSpeed);
+    moon.position.z = earthZ + moonOrbitRadius * Math.sin(elapsedTime * moonOrbitSpeed);
+    moon.position.y = earthY; // Keeps orbit flat (adjust if tilt is needed)
+}
 
 /**
  * Sun
@@ -195,6 +234,7 @@ const updateSun = () => {
     // Uniforms
     earthMaterial.uniforms.uSunDirection.value.copy(sunDirection)
     earthAtmosphereMaterial.uniforms.uSunDirection.value.copy(sunDirection)
+    moonMaterial.uniforms.uSunDirection.value.copy(sunDirection)
 }
 
 updateSun()
@@ -300,6 +340,8 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(sizes.pixelRatio)
 renderer.setClearColor('#000011')
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 /**
  * Animate
@@ -315,6 +357,9 @@ const tick = () =>
 
     // Sun rotation
     sun.rotation.y = elapsedTime * (2 * Math.PI / 150)
+
+    // Moon orbiting earth
+    updateMoonOrbit(elapsedTime)
 
     // Update for sun materials
     sunMaterial.uniforms.uTime.value = elapsedTime
