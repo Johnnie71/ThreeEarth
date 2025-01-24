@@ -169,6 +169,8 @@ float fbm(vec4 p) {
 }
 
 void main() {
+  vec3 viewDirection = normalize(vPosition - cameraPosition);
+  
   // Use the position and time to create animated noise
   vec4 p = vec4(vUv * 15.0, uTime * 0.03, 0.0);
   float noisy = fbm(p);  // Get fractal noise

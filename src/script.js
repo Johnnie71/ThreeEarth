@@ -3,16 +3,19 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import earthVertexShader from './shaders/earth/vertex.glsl'
 import earthFragmentShader from './shaders/earth/fragment.glsl'
-import atmosphereVertexShader from './shaders/atmosphere/vertex.glsl'
-import atmosphereFragmentShader from './shaders/atmosphere/fragment.glsl'
+import earthAtmosphereVertexShader from './shaders/earthatmosphere/vertex.glsl'
+import earthAtmosphereFragmentShader from './shaders/earthatmosphere/fragment.glsl'
 import sunVertexShader from './shaders/sun/vertex.glsl'
 import sunFragmentShader from './shaders/sun/fragment.glsl'
+import sunAtmosphereVertexShader from './shaders/sunatmosphere/vertex.glsl'
+import sunAtmosphereFragmentShader from './shaders/sunatmosphere/fragment.glsl'
+
 
 /**
  * Base
  */
 // Debug
-const gui = new GUI() 
+// const gui = new GUI() 
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -29,6 +32,9 @@ const textureLoader = new THREE.TextureLoader()
 const earthParameters = {}
 earthParameters.atmosphereDayColor = '#00aaff'
 earthParameters.atmosphereTwilightColor = '#ff6600'
+
+const sunParameters = {}
+sunParameters.atmosphereColor = "#FFCC00"
 
 // gui
 //     .addColor(earthParameters, 'atmosphereDayColor')
@@ -82,11 +88,11 @@ const earth = new THREE.Mesh(earthGeometry, earthMaterial)
 scene.add(earth)
 
 // Atmosphere
-const atmosphereMaterial = new THREE.ShaderMaterial({
+const earthAtmosphereMaterial = new THREE.ShaderMaterial({
     side: THREE.BackSide,
     transparent: true,
-    vertexShader: atmosphereVertexShader,
-    fragmentShader: atmosphereFragmentShader,
+    vertexShader: earthAtmosphereVertexShader,
+    fragmentShader: earthAtmosphereFragmentShader,
     uniforms:
     {
         uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
@@ -94,9 +100,9 @@ const atmosphereMaterial = new THREE.ShaderMaterial({
         uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereTwilightColor))
     },
 })
-const atmosphere = new THREE.Mesh(earthGeometry, atmosphereMaterial)
-atmosphere.scale.set(1.04, 1.04, 1.04)
-scene.add(atmosphere)
+const earthAtmosphere = new THREE.Mesh(earthGeometry, earthAtmosphereMaterial)
+earthAtmosphere.scale.set(1.04, 1.04, 1.04)
+scene.add(earthAtmosphere)
 
 
 
@@ -109,7 +115,7 @@ const sunMaterial = new THREE.ShaderMaterial({
    fragmentShader: sunFragmentShader,
    uniforms: {
         uSunTexture: new THREE.Uniform(sunTexture),
-        uTime: {value: 0.0}
+        uTime: {value: 0.0},
    }
 })
 
@@ -117,6 +123,22 @@ const sun = new THREE.Mesh(sunGeometry, sunMaterial)
 sun.scale.set(2, 2, 2)
 sun.position.set(20, 0, 0);
 scene.add(sun)
+
+const sunAtmosphereMaterial = new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    vertexShader: sunAtmosphereVertexShader,
+    fragmentShader: sunAtmosphereFragmentShader,
+    uniforms: {
+        uAtmosphereColor: new THREE.Uniform(new THREE.Color(sunParameters.atmosphereColor))
+    }
+})
+
+const sunAtmosphere = new THREE.Mesh(sunGeometry, sunAtmosphereMaterial)
+sunAtmosphere.scale.set(2.1, 2.1, 2.1)
+sunAtmosphere.position.set(20, 0, 0);
+scene.add(sunAtmosphere)
 
 // Debug Sun
 const debugSun = new THREE.Mesh(
@@ -135,7 +157,7 @@ const updateSun = () => {
     
     // Uniforms
     earthMaterial.uniforms.uSunDirection.value.copy(sunDirection)
-    atmosphereMaterial.uniforms.uSunDirection.value.copy(sunDirection)
+    earthAtmosphereMaterial.uniforms.uSunDirection.value.copy(sunDirection)
 }
 
 updateSun()
