@@ -108,7 +108,8 @@ const sunMaterial = new THREE.ShaderMaterial({
    vertexShader: sunVertexShader,
    fragmentShader: sunFragmentShader,
    uniforms: {
-        uSunTexture: new THREE.Uniform(sunTexture)
+        uSunTexture: new THREE.Uniform(sunTexture),
+        uTime: {value: 0.0}
    }
 })
 
@@ -242,6 +243,8 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
 
     earth.rotation.y = elapsedTime * 0.1
+
+    sunMaterial.uniforms.uTime.value = elapsedTime
 
     // Update controls
     controls.update()
