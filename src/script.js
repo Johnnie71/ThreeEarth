@@ -15,7 +15,7 @@ import sunAtmosphereFragmentShader from './shaders/sunatmosphere/fragment.glsl'
  * Base
  */
 // Debug
-const gui = new GUI() 
+// const gui = new GUI() 
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -77,7 +77,7 @@ particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 
 particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
 
 const particlesMaterial = new THREE.PointsMaterial({
-    size: 3.0,
+    size: 2.0,
     sizeAttenuation: true,
     vertexColors: true
 })
@@ -89,16 +89,6 @@ particlesMaterial.depthWrite = false
 particlesMaterial.blending = THREE.AdditiveBlending
 const particles = new THREE.Points(particlesGeometry, particlesMaterial)
 scene.add(particles)
-
-// const positions = new Float32Array(count * 3) // Multiply by 3 because each position is composed of 3 values (x, y, z)
-
-// for(let i = 0; i < count * 3; i++) // Multiply by 3 for same reason
-// {
-//     positions[i] = (Math.random() - 0.5) * 10 // Math.random() - 0.5 to have a random value between -0.5 and +0.5
-// }
-
-// particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-// scene.add(particlesGeometry)
 
 // Textures
 const earthDayTexture = textureLoader.load('./earth/day.jpg')
@@ -132,7 +122,7 @@ const earthMaterial = new THREE.ShaderMaterial({
     }
 })
 const earth = new THREE.Mesh(earthGeometry, earthMaterial)
-// scene.add(earth)
+scene.add(earth)
 
 // Atmosphere
 const earthAtmosphereMaterial = new THREE.ShaderMaterial({
@@ -149,7 +139,7 @@ const earthAtmosphereMaterial = new THREE.ShaderMaterial({
 })
 const earthAtmosphere = new THREE.Mesh(earthGeometry, earthAtmosphereMaterial)
 earthAtmosphere.scale.set(1.04, 1.04, 1.04)
-// scene.add(earthAtmosphere)
+scene.add(earthAtmosphere)
 
 
 
@@ -169,7 +159,7 @@ const sunMaterial = new THREE.ShaderMaterial({
 const sun = new THREE.Mesh(sunGeometry, sunMaterial)
 sun.scale.set(2, 2, 2)
 sun.position.set(20, 0, 0);
-// scene.add(sun)
+scene.add(sun)
 
 const sunAtmosphereMaterial = new THREE.ShaderMaterial({
     side: THREE.BackSide,
@@ -185,7 +175,7 @@ const sunAtmosphereMaterial = new THREE.ShaderMaterial({
 const sunAtmosphere = new THREE.Mesh(sunGeometry, sunAtmosphereMaterial)
 sunAtmosphere.scale.set(2.1, 2.1, 2.1)
 sunAtmosphere.position.set(20, 0, 0);
-// scene.add(sunAtmosphere)
+scene.add(sunAtmosphere)
 
 // Debug Sun
 const debugSun = new THREE.Mesh(
@@ -274,23 +264,23 @@ const cameraPosition = {
     fov: camera.fov,
 };
 
-gui.add(cameraPosition, 'x').min(-100).max(100).step(0.1).name('Camera X').onChange(() => {
-    camera.position.x = cameraPosition.x;
-});
+// gui.add(cameraPosition, 'x').min(-100).max(100).step(0.1).name('Camera X').onChange(() => {
+//     camera.position.x = cameraPosition.x;
+// });
 
-gui.add(cameraPosition, 'y').min(-100).max(100).step(0.1).name('Camera Y').onChange(() => {
-    camera.position.y = cameraPosition.y;
-});
+// gui.add(cameraPosition, 'y').min(-100).max(100).step(0.1).name('Camera Y').onChange(() => {
+//     camera.position.y = cameraPosition.y;
+// });
 
-gui.add(cameraPosition, 'z').min(-100).max(100).step(0.1).name('Camera Z').onChange(() => {
-    camera.position.z = cameraPosition.z;
-});
+// gui.add(cameraPosition, 'z').min(-100).max(100).step(0.1).name('Camera Z').onChange(() => {
+//     camera.position.z = cameraPosition.z;
+// });
 
-// Add FOV control
-gui.add(cameraPosition, 'fov').min(1).max(75).step(1).name('Camera FOV').onChange(() => {
-    camera.fov = cameraPosition.fov;
-    camera.updateProjectionMatrix();
-});
+// // Add FOV control
+// gui.add(cameraPosition, 'fov').min(1).max(75).step(1).name('Camera FOV').onChange(() => {
+//     camera.fov = cameraPosition.fov;
+//     camera.updateProjectionMatrix();
+// });
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
@@ -320,8 +310,10 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
 
+    // Earth Rotation
     earth.rotation.y = elapsedTime * 0.1
 
+    // Update for sun materials
     sunMaterial.uniforms.uTime.value = elapsedTime
 
     // Update controls
