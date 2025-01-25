@@ -157,6 +157,9 @@ const moonMaterial = new THREE.ShaderMaterial({
     {
         uMoonTexture: new THREE.Uniform(moonTexture),
         uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
+        uEarthPosition: new THREE.Uniform(earth.position),
+        uEarthRadius: new THREE.Uniform(2),
+        uMoonRadius: new THREE.Uniform(0.3)
     },
 })
 
@@ -170,7 +173,6 @@ const moonInitialPosition = new THREE.Vector3(5, 0, 0); // Initial Moon position
 const moonOrbitRadius = moonInitialPosition.length();   // Calculate the radius of the orbit
 const moonOrbitSpeed = 0.2; // Adjust speed for desired animation pacing
 const moonOrbitTilt = THREE.MathUtils.degToRad(5.1); // Tilt angle in radians (5.1 degrees)
-const moonRotationSpeed = (2 * Math.PI) / 27.3; // 2 * Math.PI for a full rotation, divided by 27.3 for one rotation every 27.3 days
 
 function updateMoonOrbit(elapsedTime) {
     // Use the Earth's position as the center of the orbit
@@ -184,11 +186,11 @@ function updateMoonOrbit(elapsedTime) {
     const tiltedZ = moonOrbitRadius * Math.sin(angle) * Math.cos(moonOrbitTilt);
     const tiltedY = moonOrbitRadius * Math.sin(angle) * Math.sin(moonOrbitTilt);
 
-    moon.position.x = earthX + tiltedX;
-    moon.position.y = earthY + tiltedY;
-    moon.position.z = earthZ + tiltedZ;
+    moon.position.set(earthX + tiltedX, earthY + tiltedY, earthZ + tiltedZ);
 
     moon.lookAt(earth.position)
+
+    moonMaterial.uniforms.uEarthPosition.value = earth.position
     // Apply a rotation offset to adjust which side of the Moon faces the Earth
     const rotationOffset = - Math.PI / 2; // Change this value to control the facing side
     moon.rotateY(rotationOffset);
@@ -251,6 +253,16 @@ const updateSun = () => {
 }
 
 updateSun()
+
+// Directional Light (Sun)
+const sunLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+sunLight.position.set(100, 0, 0);  // Place the light far from the scene to simulate the Sun
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 2048;  // High resolution shadows
+sunLight.shadow.mapSize.height = 2048;
+sunLight.shadow.camera.near = 0.1;     // Set near and far planes
+sunLight.shadow.camera.far = 500;
+scene.add(sunLight);
 
 //Tweaks
 // gui
