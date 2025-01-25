@@ -9,8 +9,6 @@ import sunVertexShader from './shaders/sun/vertex.glsl'
 import sunFragmentShader from './shaders/sun/fragment.glsl'
 import sunAtmosphereVertexShader from './shaders/sunatmosphere/vertex.glsl'
 import sunAtmosphereFragmentShader from './shaders/sunatmosphere/fragment.glsl'
-import moonVertexShader from './shaders/moon/vertex.glsl'
-import moonFragmentShader from './shaders/moon/fragment.glsl'
 
 
 /**
@@ -150,17 +148,8 @@ scene.add(earthAtmosphere)
 
 // Moon
 const moonGeometry = new THREE.SphereGeometry(.3, 64, 64)
-const moonMaterial = new THREE.ShaderMaterial({
-    vertexShader: moonVertexShader,
-    fragmentShader: moonFragmentShader,
-    uniforms:
-    {
-        uMoonTexture: new THREE.Uniform(moonTexture),
-        uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
-        uEarthPosition: new THREE.Uniform(earth.position),
-        uEarthRadius: new THREE.Uniform(2),
-        uMoonRadius: new THREE.Uniform(0.3)
-    },
+const moonMaterial = new THREE.MeshStandardMaterial({
+    map: moonTexture,
 })
 
 const moon = new THREE.Mesh(moonGeometry, moonMaterial)
@@ -190,7 +179,7 @@ function updateMoonOrbit(elapsedTime) {
 
     moon.lookAt(earth.position)
 
-    moonMaterial.uniforms.uEarthPosition.value = earth.position
+    // moonMaterial.uniforms.uEarthPosition.value = earth.position
     // Apply a rotation offset to adjust which side of the Moon faces the Earth
     const rotationOffset = - Math.PI / 2; // Change this value to control the facing side
     moon.rotateY(rotationOffset);
@@ -249,20 +238,29 @@ const updateSun = () => {
     // Uniforms
     earthMaterial.uniforms.uSunDirection.value.copy(sunDirection)
     earthAtmosphereMaterial.uniforms.uSunDirection.value.copy(sunDirection)
-    moonMaterial.uniforms.uSunDirection.value.copy(sunDirection)
+    // moonMaterial.uniforms.uSunDirection.value.copy(sunDirection)
 }
 
 updateSun()
 
-// Directional Light (Sun)
-const sunLight = new THREE.DirectionalLight(0xFFFFFF, 1);
-sunLight.position.set(100, 0, 0);  // Place the light far from the scene to simulate the Sun
+/// Create the directional light (sun)
+const sunLight = new THREE.DirectionalLight(0xFFFFFF, 2);
+sunLight.position.set(16, 0, 0);  // Place the light far from the scene to simulate the Sun
 sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 2048;  // High resolution shadows
-sunLight.shadow.mapSize.height = 2048;
+sunLight.shadow.camera.left = -6;   // Set the left boundary
+sunLight.shadow.camera.right = 6;  // Set the right boundary
 sunLight.shadow.camera.near = 0.1;     // Set near and far planes
-sunLight.shadow.camera.far = 500;
+sunLight.shadow.camera.far = 22;
+sunLight.shadow.bias = -0.0005; // Adjust as needed
 scene.add(sunLight);
+
+// Add a helper to visualize the light direction
+// const helper = new THREE.DirectionalLightHelper(sunLight);
+// scene.add(helper);
+
+// Add a helper for the shadow camera frustum (helps visualize the light’s shadow bounds)
+// const shadowCameraHelper = new THREE.CameraHelper(sunLight.shadow.camera);
+// scene.add(shadowCameraHelper);
 
 //Tweaks
 // gui
