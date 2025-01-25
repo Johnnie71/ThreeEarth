@@ -169,6 +169,8 @@ scene.add(moon)
 const moonInitialPosition = new THREE.Vector3(5, 0, 0); // Initial Moon position relative to the Earth
 const moonOrbitRadius = moonInitialPosition.length();   // Calculate the radius of the orbit
 const moonOrbitSpeed = 0.2; // Adjust speed for desired animation pacing
+const moonOrbitTilt = THREE.MathUtils.degToRad(5.1); // Tilt angle in radians (5.1 degrees)
+const moonRotationSpeed = (2 * Math.PI) / 27.3; // 2 * Math.PI for a full rotation, divided by 27.3 for one rotation every 27.3 days
 
 function updateMoonOrbit(elapsedTime) {
     // Use the Earth's position as the center of the orbit
@@ -176,10 +178,15 @@ function updateMoonOrbit(elapsedTime) {
     const earthY = earth.position.y;
     const earthZ = earth.position.z;
 
-    // Compute new position for the Moon
-    moon.position.x = earthX + moonOrbitRadius * Math.cos(elapsedTime * moonOrbitSpeed);
-    moon.position.z = earthZ + moonOrbitRadius * Math.sin(elapsedTime * moonOrbitSpeed);
-    moon.position.y = earthY; // Keeps orbit flat (adjust if tilt is needed)
+    // Compute new position for the Moon with tilt
+    const angle = - elapsedTime * moonOrbitSpeed;
+    const tiltedX = moonOrbitRadius * Math.cos(angle);
+    const tiltedZ = moonOrbitRadius * Math.sin(angle) * Math.cos(moonOrbitTilt);
+    const tiltedY = moonOrbitRadius * Math.sin(angle) * Math.sin(moonOrbitTilt);
+
+    moon.position.x = earthX + tiltedX;
+    moon.position.y = earthY + tiltedY;
+    moon.position.z = earthZ + tiltedZ;
 
     moon.lookAt(earth.position)
     // Apply a rotation offset to adjust which side of the Moon faces the Earth
@@ -360,6 +367,9 @@ const tick = () =>
 
     // Earth Rotation
     earth.rotation.y = elapsedTime * (2 * Math.PI / 50)
+
+    // // Update Moon rotation (realistic speed)
+    // moon.rotation.y += moonRotationSpeed * elapsedTime;
 
     // Sun rotation
     sun.rotation.y = elapsedTime * (2 * Math.PI / 150)
