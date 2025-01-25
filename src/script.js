@@ -180,6 +180,12 @@ function updateMoonOrbit(elapsedTime) {
     moon.position.x = earthX + moonOrbitRadius * Math.cos(elapsedTime * moonOrbitSpeed);
     moon.position.z = earthZ + moonOrbitRadius * Math.sin(elapsedTime * moonOrbitSpeed);
     moon.position.y = earthY; // Keeps orbit flat (adjust if tilt is needed)
+
+    moon.lookAt(earth.position)
+    // Apply a rotation offset to adjust which side of the Moon faces the Earth
+    const rotationOffset = - Math.PI / 2; // Change this value to control the facing side
+    moon.rotateY(rotationOffset);
+
 }
 
 /**
