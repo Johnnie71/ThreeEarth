@@ -8,6 +8,9 @@ uniform sampler2D uNightTexture;
 uniform sampler2D uSpecularCloudsTexture;
 uniform vec3 uAtmosphereDayColor;
 uniform vec3 uAtmosphereTwilightColor;
+uniform sampler2D uShadowMap; 
+uniform vec4 uShadowBias; 
+uniform mat4 uShadowMatrix; 
 
 void main()
 {

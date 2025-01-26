@@ -109,6 +109,25 @@ const sunTexture = textureLoader.load('./sun/sun.jpg')
 sunTexture.colorSpace = THREE.SRGBColorSpace
 sunTexture.anisotropy = 8
 
+// Directional Light (sun)
+const sunLight = new THREE.DirectionalLight(0xFFFFFF, 2);
+sunLight.position.set(16, 0, 0);  // Place the light far from the scene to simulate the Sun
+sunLight.castShadow = true;
+sunLight.shadow.camera.left = -6;   // Set the left boundary
+sunLight.shadow.camera.right = 6;  // Set the right boundary
+sunLight.shadow.camera.near = 0.1;     // Set near and far planes
+sunLight.shadow.camera.far = 22;
+sunLight.shadow.bias = -0.0005; // Adjust as needed
+scene.add(sunLight);
+
+// Add a helper to visualize the light direction
+// const helper = new THREE.DirectionalLightHelper(sunLight);
+// scene.add(helper);
+
+// Add a helper for the shadow camera frustum (helps visualize the light’s shadow bounds)
+// const shadowCameraHelper = new THREE.CameraHelper(sunLight.shadow.camera);
+// scene.add(shadowCameraHelper);
+
 // Mesh
 const earthGeometry = new THREE.SphereGeometry(2, 64, 64)
 const earthMaterial = new THREE.ShaderMaterial({
@@ -121,12 +140,15 @@ const earthMaterial = new THREE.ShaderMaterial({
         uSpecularCloudsTexture: new THREE.Uniform(earthSpecularCloudsTexture),
         uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
         uAtmosphereDayColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereDayColor)),
-        uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereTwilightColor))
-    }
+        uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereTwilightColor)),
+        uShadowMap: { value: sunLight.shadow.map }, // Shadow map
+        uShadowMatrix: { value: sunLight.shadow.matrix }, // Light's view matrix
+        uShadowBias: {value: sunLight.shadow.bias}
+    },
+    depthWrite: true
 })
 const earth = new THREE.Mesh(earthGeometry, earthMaterial)
 earth.receiveShadow = true
-earth.castShadow = true
 scene.add(earth)
 
 // Atmosphere
@@ -139,11 +161,16 @@ const earthAtmosphereMaterial = new THREE.ShaderMaterial({
     {
         uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
         uAtmosphereDayColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereDayColor)),
-        uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereTwilightColor))
+        uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereTwilightColor)),
+        uShadowMap: { value: sunLight.shadow.map }, // Shadow map
+        uShadowMatrix: { value: sunLight.shadow.matrix }, // Light's view matrix
+        uShadowBias: {value: sunLight.shadow.bias}
     },
+    depthWrite: true
 })
 const earthAtmosphere = new THREE.Mesh(earthGeometry, earthAtmosphereMaterial)
 earthAtmosphere.scale.set(1.04, 1.04, 1.04)
+earthAtmosphere.castShadow = true
 scene.add(earthAtmosphere)
 
 // Moon
@@ -242,25 +269,6 @@ const updateSun = () => {
 }
 
 updateSun()
-
-/// Create the directional light (sun)
-const sunLight = new THREE.DirectionalLight(0xFFFFFF, 2);
-sunLight.position.set(16, 0, 0);  // Place the light far from the scene to simulate the Sun
-sunLight.castShadow = true;
-sunLight.shadow.camera.left = -6;   // Set the left boundary
-sunLight.shadow.camera.right = 6;  // Set the right boundary
-sunLight.shadow.camera.near = 0.1;     // Set near and far planes
-sunLight.shadow.camera.far = 22;
-sunLight.shadow.bias = -0.0005; // Adjust as needed
-scene.add(sunLight);
-
-// Add a helper to visualize the light direction
-// const helper = new THREE.DirectionalLightHelper(sunLight);
-// scene.add(helper);
-
-// Add a helper for the shadow camera frustum (helps visualize the light’s shadow bounds)
-// const shadowCameraHelper = new THREE.CameraHelper(sunLight.shadow.camera);
-// scene.add(shadowCameraHelper);
 
 //Tweaks
 // gui

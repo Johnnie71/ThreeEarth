@@ -4,6 +4,9 @@ varying vec3 vPosition;
 uniform vec3 uSunDirection;
 uniform vec3 uAtmosphereDayColor;
 uniform vec3 uAtmosphereTwilightColor;
+uniform sampler2D uShadowMap; 
+uniform vec4 uShadowBias; 
+uniform mat4 uShadowMatrix; 
 
 void main()
 {
